@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Mortgage Discount Points Comparison</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f1f3f7; margin: 20px; }
+    .container { max-width: 1100px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #091644; }
+    .logo { text-align: center; margin-bottom: 20px; }
+    .logo img { max-width: 200px; height: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 20px; }
+    .option-box { background: #eaf0fb; padding: 15px; border-radius: 10px; text-align: center; }
+    input { width: 80%; padding: 6px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 10px; padding: 10px; width: 100%; background: #3b6ccf; color: white; border: none; border-radius: 6px; font-weight: bold; }
+    .results { margin-top: 20px; }
+    .results div { background: #f9f9f9; padding: 10px; margin-top: 5px; border-left: 5px solid #3b6ccf; }
+    .summary { margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; text-align: center; border: 1px solid #ddd; }
+    th { background: #3b6ccf; color: white; }
+    .highlight { background: #d4edda; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo Section -->
+    <div class="logo">
+      <img src="your-logo-url-here" alt="Your Logo">
+    </div>
+    <h2>Compare Mortgage Discount Point Scenarios</h2>
+    <div class="grid">
+      <!-- Repeat for 5 options -->
+      ${[1, 2, 3, 4, 5].map(index => `
+        <div class="option-box">
+          <h3>Option ${index}</h3>
+          <input type="number" id="loan${index}" placeholder="Loan Amount" value="495437">
+          <input type="number" id="rate${index}" step="0.0001" placeholder="Interest Rate (%)" value="${7 - index * 0.15}">
+          <input type="number" id="points${index}" step="0.01" placeholder="Points Paid (%)" value="${(index - 1) * 1.0}">
+          <button onclick="calculate(${index})">Calculate</button>
+          <div class="results" id="results${index}"></div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="summary">
+      <h3>Summary Table</h3>
+      <table id="summaryTable">
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Monthly Payment</th>
+            <th>Cost of Points</th>
+            <th>Breakeven (months)</th>
+            <th>Total Interest Paid</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const results = {};
+
+    function calculate(index) {
+      const loan = parseFloat(document.getElementById(`loan${index}`).value);
+      const rate = parseFloat(document.getElementById(`rate${index}`).value);
+      const points = parseFloat(document.getElementById(`points${index}`).value);
+
+      if (isNaN(loan) || isNaN(rate) || isNaN(points) || loan <= 0 || rate <= 0 || points < 0) {
+        alert('Please enter valid positive numbers!');
+        return;
+      }
+
+      const costOfPoints = loan * (points / 100);
+      const monthlyRate = rate / 100 / 12;
+      const payment = (loan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -360));
+      const totalInterestPaid = payment * 360 - loan;
+
+      results[index] = { payment, costOfPoints, totalInterestPaid };
+
+      const resultBox = document.getElementById(`results${index}`);
+      resultBox.innerHTML = `
+        <div><strong>Monthly Payment:</strong> $${payment.toFixed(2)}</div>
+        <div><strong>Cost of Points:</strong> $${costOfPoints.toFixed(2)}</div>
+        <div><strong>Total Interest Paid:</strong> $${totalInterestPaid.toFixed(2)}</div>
+      `;
+
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const tbody = document.querySelector('#summaryTable tbody');
+      tbody.innerHTML = '';
+
+      const baseline = Math.min(...Object.values(results).map(r => r.payment || Infinity));
+      for (const [index, data] of Object.entries(results)) {
+        const highlight = data.payment === baseline ? 'highlight' : '';
+        tbody.innerHTML += `
+          <tr class="${highlight}">
+            <td>Option ${index}</td>
+            <td>$${data.payment.toFixed(2)}</td>
+            <td>$${data.costOfPoints.toFixed(2)}</td>
+            <td>-</td>
+            <td>$${data.totalInterestPaid.toFixed(2)}</td>
+          </tr>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
