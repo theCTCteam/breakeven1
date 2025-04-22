@@ -1,0 +1,71 @@
+<body>
+  <div style="text-align: center; margin-bottom: 20px;">
+    <img src="https://www.cleartoclose.com/logo.png" alt="Clear to Close Logo" style="max-height: 60px;">
+  </div>
+  <div class="container">
+    <h2>Compare Mortgage Discount Point Scenarios</h2>
+    <div class="grid">
+      <!-- Repeat for 5 options -->
+      <div class="option-box">
+        <h3>Option 1</h3>
+        <input type="number" id="loan1" placeholder="Loan Amount" value="495437">
+        <input type="number" id="rate1" step="0.0001" placeholder="Interest Rate (%)" value="7.125">
+        <input type="number" id="points1" step="0.01" placeholder="Points Paid (%)" value="0">
+        <button onclick="calculate(1)">Calculate</button>
+        <div class="results" id="results1"></div>
+      </div>
+      <div class="option-box">
+        <h3>Option 2</h3>
+        <input type="number" id="loan2" placeholder="Loan Amount" value="495437">
+        <input type="number" id="rate2" step="0.0001" placeholder="Interest Rate (%)" value="6.75">
+        <input type="number" id="points2" step="0.01" placeholder="Points Paid (%)" value="0.964">
+        <button onclick="calculate(2)">Calculate</button>
+        <div class="results" id="results2"></div>
+      </div>
+      <div class="option-box">
+        <h3>Option 3</h3>
+        <input type="number" id="loan3" placeholder="Loan Amount" value="495437">
+        <input type="number" id="rate3" step="0.0001" placeholder="Interest Rate (%)" value="6.49">
+        <input type="number" id="points3" step="0.01" placeholder="Points Paid (%)" value="2.09">
+        <button onclick="calculate(3)">Calculate</button>
+        <div class="results" id="results3"></div>
+      </div>
+      <div class="option-box">
+        <h3>Option 4</h3>
+        <input type="number" id="loan4" placeholder="Loan Amount" value="495437">
+        <input type="number" id="rate4" step="0.0001" placeholder="Interest Rate (%)" value="6.375">
+        <input type="number" id="points4" step="0.01" placeholder="Points Paid (%)" value="2.548">
+        <button onclick="calculate(4)">Calculate</button>
+        <div class="results" id="results4"></div>
+      </div>
+      <div class="option-box">
+        <h3>Option 5</h3>
+        <input type="number" id="loan5" placeholder="Loan Amount" value="495437">
+        <input type="number" id="rate5" step="0.0001" placeholder="Interest Rate (%)" value="6.125">
+        <input type="number" id="points5" step="0.01" placeholder="Points Paid (%)" value="3.067">
+        <button onclick="calculate(5)">Calculate</button>
+        <div class="results" id="results5"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculate(index) {
+      const loan = parseFloat(document.getElementById(`loan${index}`).value);
+      const rate = parseFloat(document.getElementById(`rate${index}`).value);
+      const points = parseFloat(document.getElementById(`points${index}`).value);
+
+      const costOfPoints = loan * (points / 100);
+      const monthlyRate = rate / 100 / 12;
+      const payment = (loan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -360));
+
+      const resultBox = document.getElementById(`results${index}`);
+      resultBox.innerHTML = `
+        <div><strong>Monthly Payment:</strong> $${payment.toFixed(2)}</div>
+        <div><strong>Cost of Points:</strong> $${costOfPoints.toFixed(2)}</div>
+        <div><strong>Breakeven (months):</strong> ${costOfPoints > 0 ? (costOfPoints / (document.getElementById('results1').textContent ? parseFloat(document.getElementById('results1').textContent.match(/\$([0-9,.]+)/)[1].replace(/,/g, '')) - payment : 0)).toFixed(1) : 'N/A'}</div>
+      `;
+    }
+  </script>
+</body>
+</html>
